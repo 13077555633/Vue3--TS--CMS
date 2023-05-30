@@ -1,9 +1,13 @@
 import { defineStore } from 'pinia'
 import { ElMessage } from 'element-plus'
 import {
+	deletePageById,
 	deleteUserById,
+	editPageData,
 	editUserData,
+	newPageData,
 	newUserData,
+	postPageListData,
 	postUserListData
 } from '@/services/main/system/system'
 import { localCache } from '@/utils/cache'
@@ -12,7 +16,11 @@ import type { ISystemState } from './type'
 const useSystemStore = defineStore('systemStore', {
 	state: (): ISystemState => ({
 		userList: [],
-		userTotalCount: 0
+		userTotalCount: 0,
+
+		// 页面的数据
+		pageList: [],
+		pageTotalCount: 0
 	}),
 	actions: {
 		// 路由：main/system/user
@@ -21,13 +29,21 @@ const useSystemStore = defineStore('systemStore', {
 		async postUserListAction(queryInfo: any = {}) {
 			const userListResult = await postUserListData(queryInfo)
 			const { list, totalCount } = userListResult.data
+
 			this.userList = list
 			this.userTotalCount = totalCount
 		},
 
 		// 删除某个用户
 		async deleteUserByIdAction(id: number, queryInfo: any = {}) {
-			await deleteUserById(id)
+			const deleteUserResult = await deleteUserById(id)
+			// 删除是否成功提示
+			if (deleteUserResult.code === 0) {
+				ElMessage({
+					message: deleteUserResult.data,
+					type: 'success'
+				})
+			}
 
 			// 重新请求数据列表
 			this.postUserListAction(queryInfo)
@@ -50,8 +66,8 @@ const useSystemStore = defineStore('systemStore', {
 			}
 
 			// 重新请求数据列表
-			const pageInfo = localCache.getCache('pageInfo')
-			this.postUserListAction(pageInfo)
+			const localInfo = localCache.getCache('localInfo')
+			this.postUserListAction(localInfo)
 		},
 		// 编辑用户
 		async editUserDataAction(id: number, userInfo: any) {
@@ -70,10 +86,68 @@ const useSystemStore = defineStore('systemStore', {
 			}
 
 			// 重新请求数据列表
-			const pageInfo = localCache.getCache('pageInfo')
-			this.postUserListAction(pageInfo)
+			const localInfo = localCache.getCache('localInfo')
+			this.postUserListAction(localInfo)
+		},
+		// ----------- end -----------------------------------------------------------------------------------
+
+		// 前后端接口命名规范的前提下
+		/**针对页面的数据：增删改查 */
+		// 查
+		async postPageListAction(pageName: string, queryInfo: any) {
+			const pageListResult = await postPageListData(pageName, queryInfo)
+			const { totalCount, list } = pageListResult.data
+
+			this.pageList = list
+			this.pageTotalCount = totalCount
+		},
+		// 删
+		async deletePageByIdAction(pageName: string, id: number, queryInfo: any = {}) {
+			await deletePageById(pageName, id)
+
+			// 重新请求数据列表
+			this.postPageListAction(pageName, queryInfo)
+		},
+		// 新建用户
+		async newPageDataAction(pageName: string, pageInfo: any) {
+			const newPageResult = await newPageData(pageName, pageInfo)
+			// 创建是否成功提示
+			if (newPageResult.code === 0) {
+				ElMessage({
+					message: newPageResult.data,
+					type: 'success'
+				})
+			} else {
+				ElMessage({
+					message: newPageResult.data,
+					type: 'error'
+				})
+			}
+
+			// 重新请求数据列表
+			const localInfo = localCache.getCache('localInfo')
+			this.postPageListAction(pageName, localInfo)
+		},
+		// 编辑用户
+		async editPageDataAction(pageName: string, id: number, pageInfo: any) {
+			const editPageResult = await editPageData(pageName, id, pageInfo)
+			// 创建是否成功提示
+			if (editPageResult.code === 0) {
+				ElMessage({
+					message: editPageResult.data,
+					type: 'success'
+				})
+			} else {
+				ElMessage({
+					message: editPageResult.data,
+					type: 'error'
+				})
+			}
+
+			// 重新请求数据列表
+			const localInfo = localCache.getCache('localInfo')
+			this.postPageListAction(pageName, localInfo)
 		}
-		// ----------- end --------------
 	}
 })
 

@@ -30,3 +30,33 @@ export function editUserData(id: number, userInfo: any) {
 	})
 }
 // ----------- end --------------
+
+// 前后端接口命名规范的前提下
+/**针对页面的数据：增删改查 */
+// 查
+export function postPageListData(pageName: string, queryInfo: any = {}) {
+	return hyRequest.post({
+		url: `/${pageName}/list`,
+		data: queryInfo
+	})
+}
+// 删
+export function deletePageById(pageName: string, id: number) {
+	return hyRequest.delete({
+		url: `/${pageName}/${id}`
+	})
+}
+// 增
+export function newPageData(pageName: string, pageInfo: any) {
+	return hyRequest.post({
+		url: `/${pageName}`,
+		data: pageInfo
+	})
+}
+// 改
+export function editPageData(pageName: string, id: number, pageInfo: any) {
+	return hyRequest.patch({
+		url: `/${pageName}/${id}`,
+		data: pageInfo
+	})
+}
