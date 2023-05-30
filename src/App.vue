@@ -1,21 +1,19 @@
 <template>
-  <div class="app">
-    <h2>App</h2>
-    <router-link to="/main">主要</router-link>
-    <router-link to="/login">登录</router-link>
-    <router-view></router-view>
-  </div>
+	<!-- 对日期组件的转成中文(文档：国际化) -->
+	<el-config-provider :locale="locale">
+		<div class="app">
+			<Router-view></Router-view>
+		</div>
+	</el-config-provider>
 </template>
 
 <script setup lang="ts">
-interface IKun {
-  name: string
-}
-
-const ikun: IKun = {
-  name: 'kobe'
-}
-console.log(ikun)
+import locale from 'element-plus/dist/locale/zh-cn.mjs'
 </script>
 
-<style scoped></style>
+<style scoped>
+.app {
+	width: 100vw;
+	height: 100vh;
+}
+</style>
