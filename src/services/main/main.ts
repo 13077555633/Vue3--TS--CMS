@@ -10,7 +10,7 @@ export function getEntireRoles() {
 		}
 	})
 }
-
+// 请求部门列表
 export function getEntireDepartment() {
 	return hyRequest.post({
 		url: '/department/list',
@@ -18,5 +18,12 @@ export function getEntireDepartment() {
 			offset: 0,
 			size: 100
 		}
+	})
+}
+
+// 请求菜单列表
+export function getEntireMenus() {
+	return hyRequest.post({
+		url: '/menu/list'
 	})
 }

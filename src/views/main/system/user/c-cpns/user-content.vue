@@ -111,12 +111,12 @@ function handleCurrentChange() {
 function fetchUserListData(queryInfo: any = {}) {
 	const size = pageSize.value
 	const offset = (currentPage.value - 1) * size
-	const pageInfo = { size, offset }
+	const localInfo = { size, offset }
 
 	// 对分页进行缓存
-	localCache.setCache('pageInfo', pageInfo)
+	localCache.setCache('localInfo', localInfo)
 
-	const info = { ...pageInfo, ...queryInfo }
+	const info = { ...localInfo, ...queryInfo }
 	// 发起action，请求用户列表
 	systemStore.postUserListAction(info)
 }
@@ -124,8 +124,8 @@ function fetchUserListData(queryInfo: any = {}) {
 // 对用户的操作-------------------------------------
 // 5.删除用户数据
 function handleDeleteClick(id: number) {
-	const pageInfo = localCache.getCache('pageInfo')
-	systemStore.deleteUserByIdAction(id, pageInfo)
+	const localInfo = localCache.getCache('localInfo')
+	systemStore.deleteUserByIdAction(id, localInfo)
 }
 // 6.新建用户
 function handleNewUserClick() {

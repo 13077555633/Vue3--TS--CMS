@@ -8,19 +8,21 @@ import type { IAccount } from '@/types'
 import { localCache } from '@/utils/cache'
 import { LOGIN_TOKEN } from '@/global/constants'
 
-import { mapMenusToRoutes } from '@/utils/map-menus'
+import { mapMenusToPermission, mapMenusToRoutes } from '@/utils/map-menus'
 import useMainStore from '../main/main'
 
 interface ILoginState {
 	token: string
 	userInfo: any
 	userMenus: any
+	permission: any
 }
 const useLoginStore = defineStore('loginStore', {
 	state: (): ILoginState => ({
 		token: '',
 		userInfo: {},
-		userMenus: []
+		userMenus: [],
+		permission: []
 	}),
 	actions: {
 		// 用户登录逻辑
@@ -58,7 +60,11 @@ const useLoginStore = defineStore('loginStore', {
 			const mainStore = useMainStore()
 			mainStore.fetchEntireDataAction()
 
-			// 2.4 根据用户角色的相应的菜单信息动态添加相应的路由对象
+			// 重要：获取登录用户的所有按钮的权限
+			const permission = mapMenusToPermission(userMenus)
+			this.permission = permission
+
+			// 重要：2.4 根据用户角色的相应的菜单信息动态添加相应的路由对象
 			const routes = mapMenusToRoutes(userMenus) // 将获取动态路由 封装了函数
 			routes.forEach((route) => router.addRoute('main', route))
 
@@ -66,7 +72,7 @@ const useLoginStore = defineStore('loginStore', {
 			router.push('/main')
 		},
 
-		// 本地保存数据和动态路由逻辑
+		// 本地保存数据和动态路由逻辑(页面刷新重新执行该函数)
 		loadLocalCacheAction() {
 			// 登录后会有本地缓存数据
 			const token = localCache.getCache(LOGIN_TOKEN)
@@ -83,7 +89,11 @@ const useLoginStore = defineStore('loginStore', {
 				const mainStore = useMainStore()
 				mainStore.fetchEntireDataAction()
 
-				// 动态添加路由，防止刷新页面动态路由丢失
+				// 重要：获取登录用户的所有按钮的权限
+				const permission = mapMenusToPermission(userMenus)
+				this.permission = permission
+
+				//重要： 动态添加路由，防止刷新页面动态路由丢失
 				const routes = mapMenusToRoutes(userMenus)
 				routes.forEach((route) => router.addRoute('main', route))
 			}

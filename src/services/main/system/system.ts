@@ -31,7 +31,7 @@ export function editUserData(id: number, userInfo: any) {
 }
 // ----------- end --------------
 
-// 前后端接口命名规范的前提下
+// 前后端接口命名规范的前提下(对前面代码进行重构和抽取，进行多组件复用)
 /**针对页面的数据：增删改查 */
 // 查
 export function postPageListData(pageName: string, queryInfo: any = {}) {

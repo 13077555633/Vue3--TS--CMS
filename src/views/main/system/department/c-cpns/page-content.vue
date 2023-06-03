@@ -116,9 +116,9 @@ function fetchPageListData(queryInfo: any = {}) {
 // 对用户的操作-------------------------------------
 // 5.删除用户数据
 function handleDeleteClick(id: number) {
-	const pageInfo = localCache.getCache('pageInfo')
+	const localInfo = localCache.getCache('localInfo')
 
-	systemStore.deletePageByIdAction('department', id, pageInfo)
+	systemStore.deletePageByIdAction('department', id, localInfo)
 }
 // 6.新建用户
 function handleNewUserClick() {

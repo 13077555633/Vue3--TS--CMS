@@ -12,6 +12,7 @@ import {
 } from '@/services/main/system/system'
 import { localCache } from '@/utils/cache'
 import type { ISystemState } from './type'
+import useMainStore from '../main'
 
 const useSystemStore = defineStore('systemStore', {
 	state: (): ISystemState => ({
@@ -91,24 +92,37 @@ const useSystemStore = defineStore('systemStore', {
 		},
 		// ----------- end -----------------------------------------------------------------------------------
 
-		// 前后端接口命名规范的前提下
+		// 前后端接口命名规范的前提下(对前面代码进行重构和抽取，进行多组件复用)
 		/**针对页面的数据：增删改查 */
 		// 查
 		async postPageListAction(pageName: string, queryInfo: any) {
 			const pageListResult = await postPageListData(pageName, queryInfo)
-			const { totalCount, list } = pageListResult.data
-
-			this.pageList = list
-			this.pageTotalCount = totalCount
+			if (pageName !== 'menu') {
+				const { totalCount, list } = pageListResult.data
+				this.pageList = list
+				this.pageTotalCount = totalCount
+			} else {
+				const { list } = pageListResult.data
+				this.pageList = list
+				this.pageTotalCount = list.length
+			}
 		},
 		// 删
 		async deletePageByIdAction(pageName: string, id: number, queryInfo: any = {}) {
-			await deletePageById(pageName, id)
+			const deletePageResult = await deletePageById(pageName, id)
 
+			// 删除是否成功提示
+			if (deletePageResult.code === 0) {
+				ElMessage({
+					message: deletePageResult.data,
+					type: 'success'
+				})
+			}
 			// 重新请求数据列表
 			this.postPageListAction(pageName, queryInfo)
+			useMainStore().fetchEntireDataAction()
 		},
-		// 新建用户
+		// 新建数据
 		async newPageDataAction(pageName: string, pageInfo: any) {
 			const newPageResult = await newPageData(pageName, pageInfo)
 			// 创建是否成功提示
@@ -125,8 +139,13 @@ const useSystemStore = defineStore('systemStore', {
 			}
 
 			// 重新请求数据列表
-			const localInfo = localCache.getCache('localInfo')
+			let localInfo = localCache.getCache('localInfo')
+			const offset = 0
+			localCache.setCache('localInfo', { ...localInfo, offset })
+			localInfo = localCache.getCache('localInfo')
+
 			this.postPageListAction(pageName, localInfo)
+			useMainStore().fetchEntireDataAction()
 		},
 		// 编辑用户
 		async editPageDataAction(pageName: string, id: number, pageInfo: any) {
@@ -147,6 +166,7 @@ const useSystemStore = defineStore('systemStore', {
 			// 重新请求数据列表
 			const localInfo = localCache.getCache('localInfo')
 			this.postPageListAction(pageName, localInfo)
+			useMainStore().fetchEntireDataAction()
 		}
 	}
 })

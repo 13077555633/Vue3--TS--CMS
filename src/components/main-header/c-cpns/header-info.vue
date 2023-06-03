@@ -18,10 +18,7 @@
 		<div class="info">
 			<el-dropdown>
 				<span class="user_info">
-					<el-avatar
-						:size="30"
-						src="https://upload.jianshu.io/users/upload_avatars/1102036/c3628b478f06.jpeg"
-					/>
+					<el-avatar :size="30" :src="avatar" />
 					<span class="name">{{ userName }}</span>
 				</span>
 
@@ -47,13 +44,14 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 // @ts-ignore
 import { LOGIN_TOKEN } from '@/global/constants'
 // @ts-ignore
 import { localCache } from '@/utils/cache'
 
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import avatar from '@/assets/img/avatar01.png'
 
 // 获取用户信息
 const userName = ref(localCache.getCache('userInfo').name)

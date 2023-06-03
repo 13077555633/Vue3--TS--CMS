@@ -1,13 +1,6 @@
 <template>
 	<div class="panel-account">
-		<el-form
-			ref="formRef"
-			:model="account"
-			:rules="accountRules"
-			label-width="55px"
-			size="large"
-			status-icon
-		>
+		<el-form ref="formRef" :model="account" :rules="accountRules" label-width="55px" size="large">
 			<el-form-item label="帐号" prop="name">
 				<el-input v-model="account.name" />
 			</el-form-item>
